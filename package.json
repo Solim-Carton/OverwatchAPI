@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "name": "overwatch-api",
   "version": "1.0.0",
@@ -13,6 +12,7 @@
   "author": "Milos Garton",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "sequelize": "^6.32.1",
@@ -23,24 +23,3 @@
     "supertest": "^7.1.4"
   }
 }
-=======
-{
-  "name": "overwatch-api",
-  "version": "1.0.0",
-  "description": "Overwatch heroes API project",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "setup": "node database/setup.js",
-    "seed": "node database/seed.js"
-  },
-  "author": "Milos Garton",
-  "license": "MIT",
-  "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^4.18.2",
-    "sequelize": "^6.32.1",
-    "sqlite3": "^5.1.6" 
-  }
-}
->>>>>>> 3607d124f10ba058e7fa306e2a25d2f996970235
