@@ -1,12 +1,57 @@
 
 const express = require('express');
-const { Hero } = require('./database/setup'); 
+const { Hero, User } = require('./database/setup'); 
 const app = express();
 const { Op } = require('sequelize');
 const port = 3000;
+const jwt = require('jsonwebtoken');
+const authenticate = require('./middleware/auth');
+const authorize = require('./middleware/authorize');
+const bcrypt = require('bcryptjs');
+
 
 app.use(express.json());
 
+// Register
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            username,
+            password: hashedPassword
+        });
+
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+//
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const user = await User.findOne({ where: { username } });
+        if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+
+        const token = jwt.sign(
+            { userId: user.id },
+            process.env.JWT_SECRET || 'supersecretkey',
+            { expiresIn: '1h' }
+        );
+
+        res.json({ token });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // Get all heroes
 app.get('/api/heroes', async (req, res) => {
@@ -19,7 +64,7 @@ app.get('/api/heroes', async (req, res) => {
 });
 
 // Get hero by ID
-app.get('/api/heroes/:id', async (req, res) => {
+app.get('/api/heroes/:id',authenticate, async (req, res) => {
     try {
         const hero = await Hero.findByPk(req.params.id);
         if (!hero) return res.status(404).json({ error: 'Hero not found' });
@@ -55,7 +100,7 @@ app.get('/api/heroes/search', async (req, res) => {
 });
 
 // Create a new hero
-app.post('/api/heroes', async (req, res) => {
+app.post('/api/heroes',authenticate, authorize('admin'), async (req, res) => {
     try {
         const hero = await Hero.create(req.body);
         res.status(201).json(hero);
@@ -65,7 +110,7 @@ app.post('/api/heroes', async (req, res) => {
 });
 
 // Update an existing hero
-app.put('/api/heroes/:id', async (req, res) => {
+app.put('/api/heroes/:id',authenticate, authorize('admin'), async (req, res) => {
     try {
         const hero = await Hero.findByPk(req.params.id);
         if (!hero) return res.status(404).json({ error: 'Hero not found' });
@@ -77,7 +122,7 @@ app.put('/api/heroes/:id', async (req, res) => {
 });
 
 // Delete a hero
-app.delete('/api/heroes/:id', async (req, res) => {
+app.delete('/api/heroes/:id',authenticate, authorize('admin'), async (req, res) => {
     try {
         const hero = await Hero.findByPk(req.params.id);
         if (!hero) return res.status(404).json({ error: 'Hero not found' });

@@ -7,7 +7,23 @@ const db = new Sequelize({
     storage: `database/${process.env.DB_NAME || 'overwatch.db'}`, 
     logging: false
 });
-
+// User
+const User = db.define('User', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    username: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+    },
+    password: {
+        type: Sequelize.STRING,
+        allowNull: false
+    }
+});
 // Role model
 const Role = db.define('Role', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -57,4 +73,4 @@ Role.hasMany(Hero, { foreignKey: 'roleId' });
 Hero.belongsToMany(Map, { through: 'HeroMaps', foreignKey: 'heroId' });
 Map.belongsToMany(Hero, { through: 'HeroMaps', foreignKey: 'mapId' });
 
-module.exports = { db, Hero, Role, Map };
+module.exports = { db, User, Hero, Role, Map };
