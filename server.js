@@ -132,6 +132,10 @@ app.delete('/api/heroes/:id',authenticate, authorize('admin'), async (req, res) 
         res.status(500).json({ error: 'Failed to delete hero' });
     }
 });
+//Render Landing 
+app.get('/', (req, res) => {
+  res.send('API is running!');
+});
 
 
 if (require.main === module) {
