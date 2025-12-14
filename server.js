@@ -1,6 +1,6 @@
 
 const express = require('express');
-const { Hero, User } = require('./database/setup'); 
+const { Hero, User, Role } = require('./database/setup'); 
 const app = express();
 const { Op } = require('sequelize');
 const port = 3000;
@@ -30,7 +30,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-//
+//Login
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -42,7 +42,9 @@ app.post('/api/auth/login', async (req, res) => {
         if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
 
         const token = jwt.sign(
-            { userId: user.id },
+        {   userId: user.id,
+            Role: user.Role    
+        },
             process.env.JWT_SECRET || 'supersecretkey',
             { expiresIn: '1h' }
         );
@@ -64,7 +66,7 @@ app.get('/api/heroes', async (req, res) => {
 });
 
 // Get hero by ID
-app.get('/api/heroes/:id',authenticate, async (req, res) => {
+app.get('/api/heroes/:id', async (req, res) => {
     try {
         const hero = await Hero.findByPk(req.params.id);
         if (!hero) return res.status(404).json({ error: 'Hero not found' });

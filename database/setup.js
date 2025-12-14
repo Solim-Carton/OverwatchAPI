@@ -22,8 +22,14 @@ const User = db.define('User', {
     password: {
         type: Sequelize.STRING,
         allowNull: false
-    }
+    },
+    role: {  // 
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'user'
+  }
 });
+
 // Role model
 const Role = db.define('Role', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -73,4 +79,4 @@ Role.hasMany(Hero, { foreignKey: 'roleId' });
 Hero.belongsToMany(Map, { through: 'HeroMaps', foreignKey: 'heroId' });
 Map.belongsToMany(Hero, { through: 'HeroMaps', foreignKey: 'mapId' });
 
-module.exports = { db, User, Hero, Role, Map };
+module.exports = {db, User, Hero, Role, Map };

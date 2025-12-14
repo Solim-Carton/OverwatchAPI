@@ -3,9 +3,7 @@ const { db, Hero, Role, Map } = require('./setup');
 
 async function seedHeroes() {
     try {
-        // Force sync to reset database
-        await db.sync({ force: true });
-        console.log('Database reset successfully.');
+       
 
     // Create Roles
         const tank = await Role.create({ name: 'Tank' });
@@ -276,7 +274,7 @@ async function seedHeroes() {
 ]);
 
 
-        console.log('Database seeded successfully!');
+console.log('Database seeded successfully!');
     } catch (error) {
         console.error('Error seeding database:', error);
     } finally {
